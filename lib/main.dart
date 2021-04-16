@@ -18,7 +18,10 @@ class GPTSummarizer extends StatelessWidget {
     return MaterialApp(
       title: 'GPT-3 News summarizer',
       home: MyHomePage(title: "GPT-3 News summarizer"),
-      theme: ThemeData.light(),
+      theme: ThemeData(
+        primaryColor: Colors.blue.shade600,
+        scaffoldBackgroundColor: Colors.grey.shade800,
+      ),
     );
   }
 }
@@ -105,10 +108,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
           /// The bottom text field
           Container(
-              color: Theme.of(context).backgroundColor,
-              padding: EdgeInsets.all(15),
+              color: Colors.grey.shade800,
+              padding: EdgeInsets.all(10),
               child: Container(
-                  padding: EdgeInsets.all(40),
+                  // padding: EdgeInsets.all(10),
                   child: Column(children: [
                     Expanded(
                       flex: 3,
@@ -117,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           flex: 3,
                           child: Container(
                             margin: EdgeInsets.all(15),
-                            color: Theme.of(context).primaryColorLight,
+                            color: Colors.white,
                             child: TextField(
                               textAlignVertical: TextAlignVertical.top,
                               controller: textEditingController,
@@ -136,6 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         Expanded(
                           flex: 2,
                           child: Container(
+                            color: Colors.white,
                             margin: EdgeInsets.all(15),
                             child: TextField(
                               textAlignVertical: TextAlignVertical.top,
@@ -153,21 +157,22 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ]),
                     ),
-                    Container(
-                      margin: EdgeInsets.only(top: 35, bottom: 20),
-                      child: isLoading
-                          ? CircularProgressIndicator()
-                          : IconButton(
-                              icon: Icon(
-                                Icons.send,
-                                size: 35,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              onPressed: () {
-                                sendArticle(textEditingController.text);
-                              },
-                            ),
-                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Container(
+                        padding: EdgeInsets.all(15),
+                        child: isLoading
+                            ? CircularProgressIndicator()
+                            : ElevatedButton.icon(
+                          label: Text('Summarize'),
+                          icon: Icon(Icons.fast_forward_outlined),
+                          onPressed: () {
+                            sendArticle(textEditingController.text);
+                          },
+                        ),
+                      ),
+                    )
+
                   ]))),
     );
   }
