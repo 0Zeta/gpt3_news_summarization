@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui' as ui show Image;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -16,8 +17,8 @@ class GPTSummarizer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'GPT-3 News summarizer',
-      home: MyHomePage(title: "GPT-3 News summarizer"),
+      title: 'GPT-3 News Summarizer',
+      home: MyHomePage(title: "GPT-3 News Summarizer"),
       theme: ThemeData(
         primaryColor: Colors.blue.shade600,
         scaffoldBackgroundColor: Colors.grey.shade800,
@@ -76,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: jsonEncode({
         "prompt": prompt,
         "temperature": 0.2,
-        "max_tokens": 10,
+        "max_tokens": 100,
         "top_p": 0.8,
         "frequency_penalty": 0.2,
         "presence_penalty": 0.1,
@@ -117,11 +118,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       flex: 3,
                       child: Row(children: [
                         Expanded(
-                          flex: 3,
+                          flex: 7,
                           child: Container(
-                            margin: EdgeInsets.all(15),
+                            margin: EdgeInsets.all(10),
                             color: Colors.white,
                             child: TextField(
+
                               textAlignVertical: TextAlignVertical.top,
                               controller: textEditingController,
                               expands: true,
@@ -138,22 +140,46 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         Expanded(
                           flex: 2,
-                          child: Container(
-                            color: Colors.white,
-                            margin: EdgeInsets.all(15),
-                            child: TextField(
-                              textAlignVertical: TextAlignVertical.top,
-                              controller: resultSummarization,
-                              enableInteractiveSelection: true,
-                              readOnly: true,
-                              expands: true,
-                              maxLines: null,
-                              decoration: InputDecoration(
-                                focusColor: Theme.of(context).focusColor,
-                                border: OutlineInputBorder(),
-                              ),
+                          // child: Container(
+                          //   color: Colors.white,
+                          //   margin: EdgeInsets.all(15),
+                          //   child: TextField(
+                          //     textAlignVertical: TextAlignVertical.top,
+                          //     controller: resultSummarization,
+                          //     enableInteractiveSelection: true,
+                          //     readOnly: true,
+                          //     expands: true,
+                          //     maxLines: null,
+                          //     decoration: InputDecoration(
+                          //       focusColor: Theme.of(context).focusColor,
+                          //       border: OutlineInputBorder(),
+                          //     ),
+                          //   ),
+                          // ) ,
+                          child:  Container(
+                            width: 762,
+                            height: 1489,
+                            padding: EdgeInsets.all(45),
+                            // constraints: BoxConstraints.expand(),
+                            decoration: BoxDecoration(
+                                // color: Colors.white,
+                                image: DecorationImage(
+                                    image: AssetImage("assets/images/iphone.png"),
+                                    )
                             ),
-                          ),
+                            child: TextField(
+                                  style: TextStyle(color: Colors.white),
+                                  controller: resultSummarization,
+                                  enableInteractiveSelection: true,
+                                  readOnly: true,
+                                  expands: true,
+                                  maxLines: null,
+                                  decoration: InputDecoration(
+                                    // focusColor: Theme.of(context).focusColor,
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                            )
                         ),
                       ]),
                     ),
@@ -177,3 +203,5 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+
