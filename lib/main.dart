@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -9,22 +10,22 @@ Future main() async {
   await DotEnv().load('.env');
   openapiKey = DotEnv().env["OPENAI_KEY"];
   runApp(GPTSummarizer());
-
 }
 
 class GPTSummarizer extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'GPT News summarizer',
-      home: MyHomePage(title: "GPT News summarizer"),
+      title: 'GPT-3 News summarizer',
+      home: MyHomePage(title: "GPT-3 News summarizer"),
+      theme: ThemeData.light(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   final String title;
+
   MyHomePage({Key key, this.title}) : super(key: key);
 
   @override
@@ -38,11 +39,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var textEditingController = TextEditingController();
   var resultSummarization = TextEditingController();
+  var isLoading = false;
 
   /// The initial promt given to OpenAI
-  String prompt =
-      "";
-
+  String prompt = "";
 
   /// Construct a prompt for OpenAI with the new message and store the response
   void sendArticle(String article) async {
@@ -53,6 +53,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     /// Reset the text input
     textEditingController.text = "";
+
+    /// Enable the loading animation
+    setState(() {
+      isLoading = true;
+    });
 
     /// Continue the prompt template
     prompt = "$article"
@@ -71,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: jsonEncode({
         "prompt": prompt,
         "temperature": 0.2,
-        "max_tokens": 150,
+        "max_tokens": 10,
         "top_p": 0.8,
         "frequency_penalty": 0.2,
         "presence_penalty": 0.1,
@@ -86,6 +91,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     resultSummarization.text = text;
 
+    /// Disable the loading animation
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -96,60 +105,73 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body:
+
           /// The bottom text field
           Container(
-            color: Colors.white,
-            padding: EdgeInsets.all(15),
-            child: Container(
-              padding: EdgeInsets.all(40),
-              child: Column(
-                  children: [
+              color: Theme.of(context).backgroundColor,
+              padding: EdgeInsets.all(15),
+              child: Container(
+                  padding: EdgeInsets.all(40),
+                  child: Column(children: [
                     Expanded(
                       flex: 3,
-                      child: Row(
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: TextField(
-                                textAlignVertical: TextAlignVertical.top,
-                                controller: textEditingController,
-                                expands: true,
-                                maxLines: null,
-                                decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Enter the article'
-                                ),
-                                onSubmitted: (text) {
-                                  sendArticle(text);
-                                },
+                      child: Row(children: [
+                        Expanded(
+                          flex: 3,
+                          child: Container(
+                            margin: EdgeInsets.all(15),
+                            color: Theme.of(context).primaryColorLight,
+                            child: TextField(
+                              textAlignVertical: TextAlignVertical.top,
+                              controller: textEditingController,
+                              expands: true,
+                              maxLines: null,
+                              decoration: InputDecoration(
+                                  focusColor: Theme.of(context).focusColor,
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Enter the article here.'),
+                              onSubmitted: (text) {
+                                sendArticle(text);
+                              },
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            margin: EdgeInsets.all(15),
+                            child: TextField(
+                              textAlignVertical: TextAlignVertical.top,
+                              controller: resultSummarization,
+                              enableInteractiveSelection: true,
+                              readOnly: true,
+                              expands: true,
+                              maxLines: null,
+                              decoration: InputDecoration(
+                                focusColor: Theme.of(context).focusColor,
+                                border: OutlineInputBorder(),
                               ),
                             ),
-                            Expanded(
-                                flex: 2,
-                                child: TextField(
-                                textAlignVertical: TextAlignVertical.top,
-                                controller: resultSummarization,
-                                expands: true,
-                                maxLines: null,
-                                enabled: false,
-                            ),
-                            ),
-                          ]
-                      ),
+                          ),
+                        ),
+                      ]),
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.send,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      onPressed: () {
-                        sendArticle(textEditingController.text);
-                      },
+                    Container(
+                      margin: EdgeInsets.all(30),
+                      child: isLoading
+                          ? CircularProgressIndicator()
+                          : IconButton(
+                              icon: Icon(
+                                Icons.send,
+                                size: 35,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              onPressed: () {
+                                sendArticle(textEditingController.text);
+                              },
+                            ),
                     ),
-                  ]
-              )
-          )
-      ),
+                  ]))),
     );
   }
 }
