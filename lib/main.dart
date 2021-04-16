@@ -157,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ]),
                     ),
                     Container(
-                      margin: EdgeInsets.all(30),
+                      margin: EdgeInsets.only(top: 35, bottom: 20),
                       child: isLoading
                           ? CircularProgressIndicator()
                           : IconButton(
