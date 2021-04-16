@@ -51,9 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
-    /// Reset the text input
-    textEditingController.text = "";
-
     /// Enable the loading animation
     setState(() {
       isLoading = true;
