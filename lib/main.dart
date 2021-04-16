@@ -61,9 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     /// Continue the prompt template
-    prompt = "$article"
-        "\n"
-        "one-sentence summary:";
+    prompt = "I want to summarize this text:\n###\n$article\n###\nHere is a summary of this text in three short key points that will explain for everyone what the text is about:\n1.";
 
     /// Make the api request to OpenAI
     /// See available api parameters here: https://beta.openai.com/docs/api-reference/completions/create
@@ -78,17 +76,35 @@ class _MyHomePageState extends State<MyHomePage> {
         "prompt": prompt,
         "temperature": 0.2,
         "max_tokens": 100,
-        "top_p": 0.8,
+        "top_p": 0.9,
         "frequency_penalty": 0.2,
         "presence_penalty": 0.1,
-        "stop": "",
+        "stop": "###",
       }),
     );
 
     /// Decode the body and select the first choice
     var body = jsonDecode(result.body);
-    var text = body["choices"][0]["text"];
+    var text = "English:\n\"\"\"\n1." + body["choices"][0]["text"] + "\n\"\"\"\n###\nHere is the translation of the summary into German:\n\"\"\"\n1.";
     print(text);
+    result = await http.post(
+      Uri.parse("https://api.openai.com/v1/engines/davinci/completions"),
+      headers: {
+        "Authorization": "Bearer $openapiKey",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({
+        "prompt": text,
+        "temperature": 0.1,
+        "max_tokens": 100,
+        "top_p": 0.9,
+        "frequency_penalty": 0.2,
+        "presence_penalty": 0.1,
+        "stop": ["###", "\"\"\""],
+      }),
+    );
+    text = "1." + jsonDecode(result.body)["choices"][0]["text"];
 
     resultSummarization.text = text;
 
