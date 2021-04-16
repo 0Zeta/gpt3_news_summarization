@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+String OPENAI_KEY = "";
+
+Future main() async {
+  await DotEnv().load('.env');
+  OPENAI_KEY = DotEnv().env["OPENAI_KEY"];
   runApp(MyApp());
+
 }
 
 class MyApp extends StatelessWidget {
