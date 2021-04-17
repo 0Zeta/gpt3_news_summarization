@@ -290,12 +290,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         //   ),
                         // ) ,
                         child: Container(
-                          padding: EdgeInsets.all(100),
+                          padding: EdgeInsets.only(left: 55, right: 150),
                           // constraints: BoxConstraints.expand(),
                           decoration: BoxDecoration(
                               // color: Colors.white,
                               image: DecorationImage(
                             image: AssetImage("assets/images/iphone-xs.png"),
+                                alignment: Alignment.centerLeft,
                           )),
                           child: TextField(
                             style: GoogleFonts.zillaSlabHighlight(
