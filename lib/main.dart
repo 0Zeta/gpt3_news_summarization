@@ -244,50 +244,63 @@ class _MyHomePageState extends State<MyHomePage> {
                         // )
                         Expanded(
                             flex: 2,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                    flex: 1,
+                            child: Container(
+                              padding: EdgeInsets.only(bottom: 50),
+                                decoration: new BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(50)
+                                ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                      flex: 1,
+                                      child: Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Padding(
+                                            padding: EdgeInsets.only(top: 30, left: 30),
+                                            child: Text(
+                                              "Tags:",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          )
+                                      )
+                                  ),
+                                  Expanded(
+                                    flex: 9,
                                     child: Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Text(
-                                          "Tags:",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ))),
-                                Expanded(
-                                  flex: 9,
-                                  child: Align(
-                                    alignment: Alignment.topLeft,
-                                    child: TextField(
-                                      style: GoogleFonts.openSans(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                      ),
-                                      controller: tagsController,
-                                      enableInteractiveSelection: true,
-                                      readOnly: true,
-                                      expands: true,
-                                      maxLines: null,
-                                      textAlignVertical:
-                                          TextAlignVertical.top,
-                                      decoration: new InputDecoration(
-                                        contentPadding: EdgeInsets.zero,
-                                        border: InputBorder.none,
-                                        focusedBorder: InputBorder.none,
-                                        enabledBorder: InputBorder.none,
-                                        errorBorder: InputBorder.none,
-                                        disabledBorder: InputBorder.none,
+                                      alignment: Alignment.topLeft,
+                                      child: TextField(
+                                        style: GoogleFonts.openSans(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                        ),
+                                        controller: tagsController,
+                                        enableInteractiveSelection: true,
+                                        readOnly: true,
+                                        expands: true,
+                                        maxLines: null,
+                                        textAlignVertical:
+                                        TextAlignVertical.top,
+                                        decoration: new InputDecoration(
+                                          contentPadding: EdgeInsets.only(top: 30),
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                )
-                              ],
-                            ))
+                                  )
+                                ],
+                              )
+                            )
+                        )
                       ]),
                     ),
                     Column(
