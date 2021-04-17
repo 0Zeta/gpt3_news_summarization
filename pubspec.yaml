@@ -48,6 +48,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/iphone.png
+    - assets/images/iphone-xs.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
