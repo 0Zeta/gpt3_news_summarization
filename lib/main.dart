@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:ui' as ui show Image;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-
 
 String openapiKey = "";
 
@@ -64,7 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     /// Continue the prompt template
-    prompt = "I want to summarize this text:\n###\n$article\n###\nHere is a summary of this text in three short key points that will explain for everyone what the text is about:\n1.";
+    prompt =
+        "I want to summarize this text:\n###\n$article\n###\nHere is a summary of this text in three short key points that will explain for everyone what the text is about:\n1.";
 
     /// Make the api request to OpenAI
     /// See available api parameters here: https://beta.openai.com/docs/api-reference/completions/create
@@ -88,7 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     /// Decode the body and select the first choice
     var summarizationResultBody = jsonDecode(summarizationResult.body);
-    var transPrompt = "English:\n\"\"\"\n1." + summarizationResultBody["choices"][0]["text"] + "\n\"\"\"\n###\nHere is the translation of the summary into German:\n\"\"\"\n1.";
+    var transPrompt = "English:\n\"\"\"\n1." +
+        summarizationResultBody["choices"][0]["text"] +
+        "\n\"\"\"\n###\nHere is the translation of the summary into German:\n\"\"\"\n1.";
     print(transPrompt);
     var translationResult = await http.post(
       Uri.parse("https://api.openai.com/v1/engines/davinci/completions"),
@@ -108,11 +109,8 @@ class _MyHomePageState extends State<MyHomePage> {
       }),
     );
 
-
-
-    var resultSummarizationText = "1." + jsonDecode(translationResult.body)["choices"][0]["text"];
-
-    var tagsPrompt = "$resultSummarizationText\n###\nHere are three important keywords of the summary that will explain for everyone what the text is about:";
+    var tagsPrompt =
+        "Here is a text that I would like you to add tags to for me:\n\"\"\"\n$article\n\"\"\"\nHere are five hashtags:\n\"\"\"";
     var tagsResult = await http.post(
       Uri.parse("https://api.openai.com/v1/engines/davinci/completions"),
       headers: {
@@ -122,16 +120,17 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       body: jsonEncode({
         "prompt": tagsPrompt,
-        "temperature": 0.1,
-        "max_tokens": 100,
-        "top_p": 0.9,
-        "frequency_penalty": 0.2,
-        "presence_penalty": 0.1,
-        "stop": ["###", "\"\"\""],
+        "temperature": 0.46,
+        "max_tokens": 64,
+        "top_p": 1,
+        "frequency_penalty": 0.5,
+        "presence_penalty": 0,
+        "stop": ["\"\"\""],
       }),
     );
-    resultSummarization.text = resultSummarizationText;
-    tagsController.text = "1." + jsonDecode(tagsResult.body)["choices"][0]["text"];
+
+    resultSummarization.text = "• " + jsonDecode(translationResult.body)["choices"][0]["text"].toString().trim().replaceAll("2.", "•").replaceAll("3.", "•").split("\n\n")[0];
+    tagsController.text = jsonDecode(tagsResult.body)["choices"][0]["text"].toString().trim().replaceAll("\n", " ");
 
     /// Disable the loading animation
     setState(() {
@@ -146,31 +145,35 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(80.0),
         child: AppBar(
-        title:  Padding(
-          padding: EdgeInsets.only(top:15, left: 100),
-          child: Text(widget.title,
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 30,
-              )),
+          title: Padding(
+            padding: EdgeInsets.only(top: 15, left: 100),
+            child: Text(widget.title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 30,
+                )),
+          ),
+          centerTitle: false,
         ),
-        centerTitle: false,
-
-      ),),
+      ),
       body:
 
           /// The bottom text field
           Container(
               color: Color(0xFFF5F9FF),
-              padding: EdgeInsets.only(top:100, left: 100, right: 100, bottom: 50),
+              padding:
+                  EdgeInsets.only(top: 100, left: 100, right: 100, bottom: 50),
               child: Container(
                   // padding: EdgeInsets.all(10),
                   child: Column(children: [
+                Expanded(
+                  flex: 8,
+                  child: Row(children: [
                     Expanded(
-                      flex: 8,
-                      child: Row(children: [
+                      flex: 7,
+                      child: Column(children: [
                         Expanded(
-                          flex: 7,
+                          flex: 9,
                           child: Container(
                             margin: EdgeInsets.only(bottom: 50),
                             // color: Colors.white,
@@ -196,151 +199,144 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                         ),
-                        Container(
-                              padding: EdgeInsets.all(15),
-                              child: isLoading
-                                  ? CircularProgressIndicator()
-                                  : ElevatedButton(
-
-                                child: Text('Summarize'),
-                                onPressed: () {
-                                  sendArticle(textEditingController.text);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  shape: new RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(30.0),
-                                  ),
-                                  primary: Color(0xFF292D3B),
-                                  onPrimary: Colors.white,
-                                  shadowColor: Colors.grey.shade500,
-                                  elevation: 20,
-                                  padding: EdgeInsets.all(25),
-                                  textStyle: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20
-                                  ),
-                                ),
-                              ),
-                            ),
-
+                        // )
                         Expanded(
-                          flex: 3,
-                          // child: Container(
-                          //   color: Colors.white,
-                          //   margin: EdgeInsets.all(15),
-                          //   child: TextField(
-                          //     textAlignVertical: TextAlignVertical.top,
-                          //     controller: resultSummarization,
-                          //     enableInteractiveSelection: true,
-                          //     readOnly: true,
-                          //     expands: true,
-                          //     maxLines: null,
-                          //     decoration: InputDecoration(
-                          //       focusColor: Theme.of(context).focusColor,
-                          //       border: OutlineInputBorder(),
-                          //     ),
-                          //   ),
-                          // ) ,
-                          child:  Container(
-                            padding: EdgeInsets.all(100),
-                            // constraints: BoxConstraints.expand(),
-                            decoration: BoxDecoration(
-                                // color: Colors.white,
-                                image: DecorationImage(
-                                    image: AssetImage("assets/images/iphone-xs.png"),
-                                    )
-                            ),
-                            child: TextField(
-                                  style: GoogleFonts.architectsDaughter(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    height: 1.5,
+                            flex: 2,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    flex: 1,
+                                    child: Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                          "Tags:",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ))),
+                                Expanded(
+                                  flex: 9,
+                                  child: Align(
+                                    alignment: Alignment.topLeft,
+                                    child: TextField(
+                                      style: GoogleFonts.openSans(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                      controller: tagsController,
+                                      enableInteractiveSelection: true,
+                                      readOnly: true,
+                                      expands: true,
+                                      maxLines: null,
+                                      textAlignVertical:
+                                          TextAlignVertical.top,
+                                      decoration: new InputDecoration(
+                                        contentPadding: EdgeInsets.zero,
+                                        border: InputBorder.none,
+                                        focusedBorder: InputBorder.none,
+                                        enabledBorder: InputBorder.none,
+                                        errorBorder: InputBorder.none,
+                                        disabledBorder: InputBorder.none,
+                                      ),
+                                    ),
                                   ),
-                                  controller: resultSummarization,
-                                  enableInteractiveSelection: true,
-                                  readOnly: true,
-                                  expands: true,
-                                  maxLines: null,
-                                  textAlignVertical: TextAlignVertical.center,
-                                  decoration: new InputDecoration(
-                                    border: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    errorBorder: InputBorder.none,
-                                    disabledBorder: InputBorder.none,
-                                  ),
-                                ),
-                            )
-                        ),
+                                )
+                              ],
+                            ))
                       ]),
                     ),
-                    // Align(
-                    //   alignment: Alignment.bottomRight,
-                    //   child: Container(
-                    //     padding: EdgeInsets.all(15),
-                    //     child: isLoading
-                    //         ? CircularProgressIndicator()
-                    //         : ElevatedButton.icon(
-                    //       label: Text('Summarize'),
-                    //       icon: Icon(Icons.fast_forward_outlined),
-                    //       onPressed: () {
-                    //         sendArticle(textEditingController.text);
-                    //       },
-                    //     ),
-                    //   ),
-                    // )
-                    Expanded(
-                      flex: 2,
-                      child: Row(
-                        children: [
-                          Expanded(
-                              flex: 1,
-                              child: Align(
-                                alignment: Alignment.topLeft,
-                                  child: Text(
-                                "Tags:",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                    Container(
+                      padding: EdgeInsets.all(15),
+                      child: isLoading
+                          ? CircularProgressIndicator()
+                          : ElevatedButton(
+                              child: Text('Summarize'),
+                              onPressed: () {
+                                sendArticle(textEditingController.text);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: new RoundedRectangleBorder(
+                                  borderRadius: new BorderRadius.circular(30.0),
                                 ),
-                              ))
-                          ),
-                          Expanded(
-                            flex: 9,
-                            child: Align(
-                              alignment: Alignment.topLeft,
-                              child: TextField(
-                                style: GoogleFonts.openSans(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  height: 1.5,
-                                ),
-                                controller: tagsController,
-                                enableInteractiveSelection: true,
-                                readOnly: true,
-                                expands: true,
-                                maxLines: null,
-                                textAlignVertical: TextAlignVertical.center,
-                                decoration: new InputDecoration(
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                ),
+                                primary: Color(0xFF292D3B),
+                                onPrimary: Colors.white,
+                                shadowColor: Colors.grey.shade500,
+                                elevation: 20,
+                                padding: EdgeInsets.all(25),
+                                textStyle: TextStyle(
+                                    color: Colors.black, fontSize: 20),
                               ),
                             ),
-                          )
-                        ],
-                      )
-
-                    )
-                  ]))),
+                    ),
+                    Expanded(
+                        flex: 3,
+                        // child: Container(
+                        //   color: Colors.white,
+                        //   margin: EdgeInsets.all(15),
+                        //   child: TextField(
+                        //     textAlignVertical: TextAlignVertical.top,
+                        //     controller: resultSummarization,
+                        //     enableInteractiveSelection: true,
+                        //     readOnly: true,
+                        //     expands: true,
+                        //     maxLines: null,
+                        //     decoration: InputDecoration(
+                        //       focusColor: Theme.of(context).focusColor,
+                        //       border: OutlineInputBorder(),
+                        //     ),
+                        //   ),
+                        // ) ,
+                        child: Container(
+                          padding: EdgeInsets.all(100),
+                          // constraints: BoxConstraints.expand(),
+                          decoration: BoxDecoration(
+                              // color: Colors.white,
+                              image: DecorationImage(
+                            image: AssetImage("assets/images/iphone-xs.png"),
+                          )),
+                          child: TextField(
+                            style: GoogleFonts.zillaSlabHighlight(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              height: 1.5,
+                            ),
+                            controller: resultSummarization,
+                            enableInteractiveSelection: true,
+                            readOnly: true,
+                            expands: true,
+                            maxLines: null,
+                            textAlignVertical: TextAlignVertical.center,
+                            decoration: new InputDecoration(
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              errorBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
+                            ),
+                          ),
+                        )),
+                  ]),
+                ),
+                // Align(
+                //   alignment: Alignment.bottomRight,
+                //   child: Container(
+                //     padding: EdgeInsets.all(15),
+                //     child: isLoading
+                //         ? CircularProgressIndicator()
+                //         : ElevatedButton.icon(
+                //       label: Text('Summarize'),
+                //       icon: Icon(Icons.fast_forward_outlined),
+                //       onPressed: () {
+                //         sendArticle(textEditingController.text);
+                //       },
+                //     ),
+                //   ),
+                // ),
+              ]))),
     );
   }
 }
-
-
