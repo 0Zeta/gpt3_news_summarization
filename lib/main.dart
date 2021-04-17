@@ -1,9 +1,13 @@
 import 'dart:convert';
-import 'dart:ui' as ui show Image;
+import 'dart:ui' as ui;
+import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as imagePack;
 
 String openapiKey = "";
 
@@ -41,6 +45,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  ui.Image image;
+  List<int> imageBytes;
+  bool isImageLoaded = false;
+  Size imageSize = Size(500, 500);
   var textEditingController = TextEditingController();
   var resultSummarization = TextEditingController();
   var isLoading = false;
@@ -114,6 +122,47 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  Future <Null> init() async {
+    final ByteData data = await rootBundle.load('assets/images/iphone.png');
+    imageBytes = new Uint8List.view(data.buffer);
+    image = await loadImage();
+  }
+
+  Future<ui.Image> loadImage() async {
+    imagePack.Image baseImage = imagePack.decodeImage(imageBytes);
+    final newWidth = imageSize.width.toInt();
+    final newHeight = (1489 * newWidth ~/ 762);
+    imagePack.Image imageResized = imagePack.copyResize(baseImage, height: newHeight, width: newWidth);
+    print("new width: ${imageResized.width}, new height: ${imageResized.height}");
+
+    final Completer<ui.Image> completer = new Completer();
+    print(imageSize);
+    ui.decodeImageFromList(imagePack.encodePng(imageResized), (ui.Image img) {
+      setState(() {
+        isImageLoaded = true;
+      });
+      return completer.complete(img);
+    });
+    return completer.future;
+  }
+
+  Widget _buildImage() {
+    if (this.isImageLoaded) {
+      final painter = new ImageEditor(image: image);
+      return new CustomPaint(
+        painter: painter,
+        // size: Size(762, 1489),
+      );
+    } else {
+      return new Center(child: new Text('loading'));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,46 +205,53 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         Expanded(
                           flex: 2,
-                          // child: Container(
-                          //   color: Colors.white,
-                          //   margin: EdgeInsets.all(15),
-                          //   child: TextField(
-                          //     textAlignVertical: TextAlignVertical.top,
-                          //     controller: resultSummarization,
-                          //     enableInteractiveSelection: true,
-                          //     readOnly: true,
-                          //     expands: true,
-                          //     maxLines: null,
-                          //     decoration: InputDecoration(
-                          //       focusColor: Theme.of(context).focusColor,
-                          //       border: OutlineInputBorder(),
-                          //     ),
+                          // child:  Container(
+                          //   width: 762,
+                          //   height: 1489,
+                          //   padding: EdgeInsets.all(45),
+                          //   // constraints: BoxConstraints.expand(),
+                          //   decoration: BoxDecoration(
+                          //       // color: Colors.white,
+                          //       image: DecorationImage(
+                          //           image: AssetImage("assets/images/iphone.png"),
+                          //           )
                           //   ),
-                          // ) ,
-                          child:  Container(
-                            width: 762,
-                            height: 1489,
-                            padding: EdgeInsets.all(45),
-                            // constraints: BoxConstraints.expand(),
-                            decoration: BoxDecoration(
-                                // color: Colors.white,
-                                image: DecorationImage(
-                                    image: AssetImage("assets/images/iphone.png"),
-                                    )
-                            ),
-                            child: TextField(
-                                  style: TextStyle(color: Colors.white),
-                                  controller: resultSummarization,
-                                  enableInteractiveSelection: true,
-                                  readOnly: true,
-                                  expands: true,
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                    // focusColor: Theme.of(context).focusColor,
-                                    border: OutlineInputBorder(),
-                                  ),
-                                ),
-                            )
+                          //   child: TextField(
+                          //         style: TextStyle(color: Colors.white),
+                          //         controller: resultSummarization,
+                          //         enableInteractiveSelection: true,
+                          //         readOnly: true,
+                          //         expands: true,
+                          //         maxLines: null,
+                          //         decoration: InputDecoration(
+                          //           // focusColor: Theme.of(context).focusColor,
+                          //           border: OutlineInputBorder(),
+                          //         ),
+                          //       ),
+                          //   )
+
+                          // child: SizedBox(
+                          //   width: 500,
+                          //   height: 500,
+                          //   child: _buildImage(),
+                          // )
+
+                          child: MeasureSize(
+                              onChange: (size) {
+                                // setState(() {
+                                //   this.imageSize = size;
+                                //   this.loadImage();
+                                // });
+                                if (this.imageSize.width != size.width) {
+                                  setState(() {
+                                    this.imageSize = size;
+                                    this.loadImage();
+                                  });
+                                }
+
+                              },
+                              child: _buildImage(),
+                          ),
                         ),
                       ]),
                     ),
@@ -220,4 +276,57 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+class ImageEditor extends CustomPainter {
+
+
+  ImageEditor({
+    this.image,
+  });
+
+  ui.Image image;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Future<ByteData> data = image.toByteData();
+    canvas.drawImage(image, new Offset(0.0, 0.0), new Paint());
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
+
+}
+
+typedef void OnWidgetSizeChange(Size size);
+
+class MeasureSize extends StatefulWidget {
+  final Widget child;
+  final OnWidgetSizeChange onChange;
+
+  const MeasureSize({
+    Key key,
+    @required this.onChange,
+    @required this.child,
+  }) : super(key: key);
+
+  @override
+  _MeasureSizeState createState() => _MeasureSizeState();
+}
+
+class _MeasureSizeState extends State<MeasureSize> {
+  var widgetKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) =>  widget.onChange(widgetKey.currentContext.size));
+
+    return Container(
+      key: widgetKey,
+      child: widget.child,
+    );
+  }
+}
 
