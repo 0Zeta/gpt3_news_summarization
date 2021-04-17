@@ -137,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }),
     );
 
-    phoneOutput.text = "• " + jsonDecode(translationResult.body)["choices"][0]["text"].toString().trim().replaceAll("2.", "•").replaceAll("3.", "•").split("\n\n")[0];
+    phoneOutput.text = "• " + jsonDecode(translationResult.body)["choices"][0]["text"].toString().trim().replaceFirst("\n2.", "\n•").replaceFirst("\n3.", "\n•").split("\n\n")[0];
     tagsController.text = jsonDecode(tagsResult.body)["choices"][0]["text"].toString().trim().replaceAll("\n", " ");
 
     /// Disable the loading animation
