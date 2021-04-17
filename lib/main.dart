@@ -406,12 +406,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           decoration: BoxDecoration(
                               // color: Colors.white,
                               image: DecorationImage(
-                            image: AssetImage("assets/images/iphone-xs.png"),
+                            image: AssetImage("assets/images/iphone-xs-bg1.png"),
                                 alignment: Alignment.centerLeft,
                           )),
                           child: TextField(
                             style: GoogleFonts.zillaSlabHighlight(
-                              color: Colors.black,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
                               height: 1.5,
