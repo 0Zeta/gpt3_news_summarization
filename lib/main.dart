@@ -3,7 +3,9 @@ import 'dart:ui' as ui show Image;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+
 
 String openapiKey = "";
 
@@ -184,15 +186,24 @@ class _MyHomePageState extends State<MyHomePage> {
                                     )
                             ),
                             child: TextField(
-                                  style: TextStyle(color: Colors.white),
+                                  style: GoogleFonts.architectsDaughter(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    height: 1.5,
+                                  ),
                                   controller: resultSummarization,
                                   enableInteractiveSelection: true,
                                   readOnly: true,
                                   expands: true,
                                   maxLines: null,
-                                  decoration: InputDecoration(
-                                    // focusColor: Theme.of(context).focusColor,
-                                    border: OutlineInputBorder(),
+                                  textAlignVertical: TextAlignVertical.center,
+                                  decoration: new InputDecoration(
+                                    border: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    errorBorder: InputBorder.none,
+                                    disabledBorder: InputBorder.none,
                                   ),
                                 ),
                             )
