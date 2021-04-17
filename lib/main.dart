@@ -8,8 +8,11 @@ import 'package:http/http.dart' as http;
 String openapiKey = "";
 
 Future main() async {
-  await DotEnv().load('.env');
-  openapiKey = DotEnv().env["OPENAI_KEY"];
+  openapiKey = null;
+  try {
+    await DotEnv().load('.env');
+    openapiKey = DotEnv().env["OPENAI_KEY"];
+  } catch(Exception) {}
   runApp(GPTSummarizer());
 }
 
@@ -53,6 +56,11 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Construct a prompt for OpenAI with the new message and store the response
   void _summarize(String article) async {
     if (article == "") {
+      return;
+    }
+
+    if (openapiKey == null) {
+      _showKeyDialog();
       return;
     }
 
@@ -138,8 +146,42 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _showKeyDialog() {
+    var keyController = TextEditingController();
+    showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+            title: Text("Missing API key"),
+            content: TextField(
+              decoration: InputDecoration(
+                hintText: "Please enter your GPT-3 API key.",
+              ),
+              controller: keyController,
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Submit'),
+                onPressed: () {
+                  setState(() {
+                    openapiKey = keyController.text.toString();
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
+
   void _quizz(String article) async {
     if (article == "") {
+      return;
+    }
+
+    if (openapiKey == null) {
+      _showKeyDialog();
       return;
     }
 
