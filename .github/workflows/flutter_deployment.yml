@@ -19,7 +19,11 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
+        with:
+          workingDir: build/web
       - uses: subosito/flutter-action@v1
+        with:
+          workingDir: build/web
       - uses: erickzanardo/flutter-gh-pages@v3
         with:
           workingDir: build/web
