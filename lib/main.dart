@@ -175,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         Expanded(
                           flex: 9,
                           child: Container(
-                            margin: EdgeInsets.only(bottom: 50),
+                            margin: EdgeInsets.only(bottom: 50, right: 5),
                             // color: Colors.white,
                             child: TextField(
                               textAlignVertical: TextAlignVertical.top,
@@ -290,7 +290,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         //   ),
                         // ) ,
                         child: Container(
-                          padding: EdgeInsets.only(left: 55, right: 150),
+                          padding: EdgeInsets.only(left: 55, right: 100),
                           // constraints: BoxConstraints.expand(),
                           decoration: BoxDecoration(
                               // color: Colors.white,
