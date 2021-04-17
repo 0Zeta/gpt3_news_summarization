@@ -377,7 +377,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: isLoadingQuizz
                               ? CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Color(0xFF292D3B)),)
                               : ElevatedButton(
-                            child: Text('Quizz'),
+                            child: Text('Quiz'),
                             onPressed: () {
                               _quizz(textEditingController.text);
                             },
