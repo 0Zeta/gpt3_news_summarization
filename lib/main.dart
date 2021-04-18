@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: jsonEncode({
         "prompt": prompt,
         "temperature": 0.2,
-        "max_tokens": 100,
+        "max_tokens": 120,
         "top_p": 0.9,
         "frequency_penalty": 0.2,
         "presence_penalty": 0.1,
@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
     /// Decode the body and select the first choice
     var summarizationResultBody = jsonDecode(summarizationResult.body);
     var transPrompt = "English:\n\"\"\"\n1." +
-        summarizationResultBody["choices"][0]["text"] +
+        summarizationResultBody["choices"][0]["text"].toString().split("\n4.")[0].split("\nI have")[0] +
         "\n\"\"\"\n###\nHere is the translation of the summary into German:\n\"\"\"\n1.";
     print(transPrompt);
     var translationResult = await http.post(
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: jsonEncode({
         "prompt": transPrompt,
         "temperature": 0.1,
-        "max_tokens": 100,
+        "max_tokens": 120,
         "top_p": 0.9,
         "frequency_penalty": 0.2,
         "presence_penalty": 0.1,
@@ -137,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }),
     );
 
-    phoneOutput.text = "• " + jsonDecode(translationResult.body)["choices"][0]["text"].toString().trim().replaceFirst("\n2.", "\n•").replaceFirst("\n3.", "\n•").split("\n\n")[0];
+    phoneOutput.text = "• " + jsonDecode(translationResult.body)["choices"][0]["text"].toString().trim().replaceFirst("\n2.", "\n•").replaceFirst("\n3.", "\n•").split("\n\n")[0].split("\nIch ")[0].split("\nI have ")[0];
     tagsController.text = jsonDecode(tagsResult.body)["choices"][0]["text"].toString().trim().replaceAll("\n", " ");
 
     /// Disable the loading animation
@@ -154,6 +154,9 @@ class _MyHomePageState extends State<MyHomePage> {
           return AlertDialog(
             title: Text("Missing API key"),
             content: TextField(
+              enableSuggestions: false,
+              autocorrect: false,
+              obscureText: true,
               decoration: InputDecoration(
                 hintText: "Please enter your GPT-3 API key.",
               ),
@@ -192,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     /// Continue the prompt template
     var quizPrompt =
-    "Text:\n###\nGeflügelpest im Allgäu: Lindau weist Beobachtungsgebiet aus\nWeil im Nachbarlandkreis Fälle der Geflügelpest registriert wurden, weist Lindau ein Beobachtungsgebiet für die Tierseuche aus. Für Geflügelhalter gelten ab sofort bestimmte Regeln.Nachdem im Bereich der Gemeinde Isny die Geflügelpest ausgebrochen ist, hat der Nachbarlandkreis Lindau nun reagiert und ein sogenanntes \"Beobachtungsgebiet\" ausgewiesen.\n###\nThis is a question about the text and one short answer from the text\n###\nQuestion: \nWo ist die Geflügelpest ausgebrochen?\na) Gemeinde Isny\nb) Japan\nc) Köln\n###\nText:\n###\nIm Mordprozess vor dem Landgericht Regensburg hat der 37-jährige Angeklagte am Donnerstagvormittag gestanden, seine beiden Kinder in Schwarzach im Kreis Straubing-Bogen getötet zu haben.\n###\nThis is a question about the text and one short answer from the text and two wrong options\n###\nQuestion: \nWo hat der Angeklagte seine Kinder getötet?\na) In Schwarzach\nb) In Russland\nc) In Berlin\n###\nText:\n###\nGericht kippt 15-Kilometer-Regel in Bayern\nDie 15-Kilometer-Grenze für Bewohner in Corona-Hotspots gilt in Bayern ab sofort nicht mehr. Der Bayerische Verwaltungsgerichtshof setzte die Regelung im Eilverfahren vorläufig außer Vollzug. Bestätigt wurde indes die FFP2-Maskenpflicht.\n\nDer Bayerische Verwaltungsgerichtshof hat das Verbot von touristischen Tagesausflügen für Bewohner von Corona-Hotspots über einen Umkreis von 15 Kilometern hinaus in Bayern vorläufig gekippt. Die textliche Festlegung eines solchen Umkreises sei nicht deutlich genug und verstoße aller Voraussicht nach gegen den Grundsatz der Normenklarheit, entschied das Gericht am Dienstag.\n\nGegen den Beschluss gibt es keine Rechtsmittel. Der Kläger, der SPD-Landtagsabgeordnete Christian Flisek, erklärte, die Entscheidung zeige, dass auch in Krisenzeiten auf den Rechtsstaat Verlass sei. Künftige Bußgeldbescheide hätten nun keine Rechtsgrundlage mehr - bei Verstößen wurden bisher 500 Euro fällig.\n\n###\nThis is a question about the text and one short answer from the text and two wrong options\n###\nQuestion: \nWelche Strafe gibt es für Verstoße der Regeln?\na) 500 euro\nb) 2000 euro\nc) 15 euro\n###\nText:\n###\n$article\n###\nThis is a question about the text and one short answer from the text and two wrong options\n###\nQuestion: \n";
+    "Text:\n###\nGeflügelpest im Allgäu: Lindau weist Beobachtungsgebiet aus\nWeil im Nachbarlandkreis Fälle der Geflügelpest registriert wurden, weist Lindau ein Beobachtungsgebiet für die Tierseuche aus. Für Geflügelhalter gelten ab sofort bestimmte Regeln.Nachdem im Bereich der Gemeinde Isny die Geflügelpest ausgebrochen ist, hat der Nachbarlandkreis Lindau nun reagiert und ein sogenanntes \"Beobachtungsgebiet\" ausgewiesen.\n###\nThis is a question about the text and one short answer from the text\n###\nQuestion: \nWo ist die Geflügelpest ausgebrochen?\na) Gemeinde Isny\nb) Japan\nc) Köln\n###\nText:\n###\nIm Mordprozess vor dem Landgericht Regensburg hat der 37-jährige Angeklagte am Donnerstagvormittag gestanden, seine beiden Kinder in Schwarzach im Kreis Straubing-Bogen getötet zu haben.\n###\nThis is a question about the text and one short answer from the text and two wrong options\n###\nQuestion: \nWo hat der Angeklagte seine Kinder getötet?\na) In Schwarzach\nb) In Russland\nc) In Berlin\n###\nText:\n###\nGericht kippt 15-Kilometer-Regel in Bayern\nDie 15-Kilometer-Grenze für Bewohner in Corona-Hotspots gilt in Bayern ab sofort nicht mehr. Der Bayerische Verwaltungsgerichtshof setzte die Regelung im Eilverfahren vorläufig außer Vollzug. Bestätigt wurde indes die FFP2-Maskenpflicht.\n\nDer Bayerische Verwaltungsgerichtshof hat das Verbot von touristischen Tagesausflügen für Bewohner von Corona-Hotspots über einen Umkreis von 15 Kilometern hinaus in Bayern vorläufig gekippt. Die textliche Festlegung eines solchen Umkreises sei nicht deutlich genug und verstoße aller Voraussicht nach gegen den Grundsatz der Normenklarheit, entschied das Gericht am Dienstag.\n\nGegen den Beschluss gibt es keine Rechtsmittel. Der Kläger, der SPD-Landtagsabgeordnete Christian Flisek, erklärte, die Entscheidung zeige, dass auch in Krisenzeiten auf den Rechtsstaat Verlass sei. Künftige Bußgeldbescheide hätten nun keine Rechtsgrundlage mehr - bei Verstößen wurden bisher 500 Euro fällig.\n\n###\nThis is a question about the text and one short answer from the text and two wrong options\n###\nQuestion: \nWelche Strafe gibt es für Verstoße der Regeln?\na) 500 Euro\nb) 2000 Euro\nc) 15 Euro\n###\nText:\n###\n$article\n###\nThis is a question about the text and one short answer from the text and two wrong options\n###\nQuestion: \n";
 
 
     var quizzResult = await http.post(
